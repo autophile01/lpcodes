@@ -1,0 +1,177 @@
+- **Matrix Multiplication Code Explanation**
+    1. **`!nvcc --version`**: This is a shell command (**`!`** at the beginning indicates that it's a shell command, not a Python command) that runs the **`nvcc`** command with the **`-version`** flag. **`nvcc`** is the NVIDIA CUDA Compiler, which is used to compile CUDA code. This command will display the version of CUDA compiler installed on your system. It's crucial to have CUDA installed and properly configured on your system to compile and run CUDA code.
+    2. **`!pip install git+https://github.com/andreinechaev/nvcc4jupyter.git`**: This is a shell command that uses **`pip`** (Python package installer) to install a Python package named **`nvcc4jupyter`** directly from a GitHub repository. **`nvcc4jupyter`** is a Jupyter notebook extension that allows you to compile and run CUDA code directly within Jupyter notebooks. By installing this package, you'll be able to use CUDA in your Jupyter notebooks.
+    3. **`%load_ext nvcc4jupyter`**: This is a Jupyter notebook magic command (**`%`** at the beginning indicates that it's a magic command) that loads the **`nvcc4jupyter`** extension into the Jupyter notebook environment. Once this extension is loaded, you'll be able to use additional magic commands provided by **`nvcc4jupyter`** to compile and run CUDA code cells directly within your Jupyter notebooks.
+    
+    The **`%%cuda`** magic command is used in Jupyter notebooks or similar environments to denote that the following code block contains CUDA C++ code, which is meant to be compiled and executed on NVIDIA GPUs. Let's go through each line of the code:
+    
+    ```cpp
+    __global__ void matrixMul(const int* A, const int* B, int* C, int N) {
+    ```
+    
+    This line declares a kernel function named `matrixMul`. The keyword `__global__` indicates that this function will be called from the host but executed on the device (GPU). It takes four arguments: `A`, `B`, and `C` are pointers to constant integer arrays representing matrices A, B, and C, respectively. `N` is an integer representing the size of the matrices (assuming square matrices here).
+    
+    ```cpp
+        int row = blockIdx.y * blockDim.y + threadIdx.y;
+        int col = blockIdx.x * blockDim.x + threadIdx.x;
+    ```
+    
+    These lines calculate the row and column indices for the current thread. `blockIdx` and `threadIdx` are CUDA-provided variables that contain the block index and thread index within the block, respectively. `blockDim` is another CUDA-provided variable representing the dimensions of a block. By multiplying the block index with the block dimension and adding the thread index, we get the global index of the thread within the grid.
+    
+    ```cpp
+        if (row < N && col < N) {
+    ```
+    
+    This line checks if the current thread is within the bounds of the matrices. It ensures that the thread doesn't access memory outside the allocated space.
+    
+    ```cpp
+            int sum = 0;
+            for (int k = 0; k < N; ++k) {
+                sum += A[row * N + k] * B[k * N + col];
+            }
+    ```
+    
+    These lines perform the actual matrix multiplication. Each thread calculates the sum of products of corresponding elements of rows of matrix A and columns of matrix B and stores the result in the variable `sum`.
+    
+    ```cpp
+            C[row * N + col] = sum;
+    ```
+    
+    This line writes the computed sum to the corresponding element in the result matrix C. The expression `row * N + col` calculates the linear index of the current element in the 2D matrix represented as a 1D array. This index represents the row-major order storage of elements in the matrix.
+    
+    ```cpp
+    void printMatrix(const std::vector<int>& matrix, int N) {
+    ```
+    
+    This line defines the function `printMatrix`. It takes two parameters:
+    
+    - `matrix`: a constant reference to a vector of integers (`std::vector<int>&`). This vector represents the matrix to be printed. Using a reference to a constant vector avoids making a copy of the vector and ensures that the function cannot modify the original vector.
+    - `N`: an integer representing the size of the matrix (assuming it's a square matrix).
+    
+    ```cpp
+        for (int i = 0; i < N; ++i) {
+    ```
+    
+    This line starts a loop that iterates over the rows of the matrix. It initializes an integer variable `i` to 0 and iterates while `i` is less than `N`, the size of the matrix. After each iteration, `i` is incremented by 1.
+    
+    ```cpp
+            for (int j = 0; j < N; ++j) {
+    ```
+    
+    This line starts another loop nested within the outer loop. It iterates over the columns of the matrix. It initializes an integer variable `j` to 0 and iterates while `j` is less than `N`, the size of the matrix. After each iteration, `j` is incremented by 1.
+    
+    ```cpp
+                std::cout << matrix[i * N + j] << " ";
+    ```
+    
+    This line prints the element at the `i`-th row and `j`-th column of the matrix. It accesses the element using the formula `i * N + j`, which calculates the index of the element in a flattened representation of the matrix.
+    
+    ```cpp
+    int main() {
+    ```
+    
+    This line starts the definition of the `main` function, which serves as the entry point for the program.
+    
+    ```cpp
+        const int N = 3; // Size of the matrices (for demonstration purposes)
+    ```
+    
+    This line declares a constant integer `N` and initializes it to 3. This constant represents the size of the square matrices `A`, `B`, and `C`. For demonstration purposes, the matrices are of size 3x3.
+    
+    ```cpp
+        const int blockSize = 2; // Threads per block
+    ```
+    
+    This line declares a constant integer `blockSize` and initializes it to 2. This constant represents the number of threads per block when executing the CUDA kernel.
+    
+    ```cpp
+        const int gridSize = (N + blockSize - 1) / blockSize; // Number of blocks
+    ```
+    
+    This line calculates the number of blocks needed to cover the matrices. It ensures that the number of blocks is sufficient to cover all elements of the matrices. The calculation takes into account the size of the matrices (`N`) and the number of threads per block (`blockSize`).
+    
+    ```cpp
+        // Initialize host matrices
+        std::vector<int> hostA = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        std::vector<int> hostB = {9, 8, 7, 6, 5, 4, 3, 2, 1};
+        std::vector<int> hostC(N * N);
+    ```
+    
+    These lines initialize three vectors of integers (`hostA`, `hostB`, and `hostC`). `hostA` and `hostB` are initialized with specific values representing the input matrices `A` and `B`, respectively. `hostC` is initialized with enough space to hold the result matrix `C`.
+    
+    ```cpp
+        // Print input matrices
+        std::cout << "Matrix A:" << std::endl;
+        printMatrix(hostA, N);
+        std::cout << "Matrix B:" << std::endl;
+        printMatrix(hostB, N);
+    ```
+    
+    These lines print the input matrices `A` and `B` to the standard output using the `printMatrix` function.
+    
+    ```cpp
+        // Declare device pointers
+        int *deviceA, *deviceB, *deviceC;
+    ```
+    
+    These lines declare pointers to integers (`int`) which will be used to represent device (GPU) memory.
+    
+    ```cpp
+        // Allocate device memory
+        cudaMalloc((void**)&deviceA, N * N * sizeof(int));
+        cudaMalloc((void**)&deviceB, N * N * sizeof(int));
+        cudaMalloc((void**)&deviceC, N * N * sizeof(int));
+    ```
+    
+    These lines allocate memory on the GPU for matrices `A`, `B`, and `C` using `cudaMalloc`. The size of each allocation is calculated based on the dimensions of the matrices (`N * N`) and the size of each element (`sizeof(int)`).
+    
+    ```cpp
+        // Copy host data to device
+        cudaMemcpy(deviceA, hostA.data(), N * N * sizeof(int), cudaMemcpyHostToDevice);
+        cudaMemcpy(deviceB, hostB.data(), N * N * sizeof(int), cudaMemcpyHostToDevice);
+    ```
+    
+    These lines copy the data from the host (CPU) memory represented by the vectors `hostA` and `hostB` to the device (GPU) memory represented by the pointers `deviceA` and `deviceB` using `cudaMemcpy`. The `data()` member function of vectors provides a pointer to the underlying array.
+    
+    ```cpp
+        // Launch kernel
+        dim3 threadsPerBlock(blockSize, blockSize);
+        dim3 numBlocks(gridSize, gridSize);
+        matrixMul<<<numBlocks, threadsPerBlock>>>(deviceA, deviceB, deviceC, N);
+    ```
+    
+    These lines configure the grid and block dimensions for the kernel launch and then launch the `matrixMul` kernel on the GPU. The kernel will execute in parallel with multiple threads, performing the matrix multiplication operation.
+    
+    - **`dim3 threadsPerBlock(blockSize, blockSize);`**: This line defines a 2D block of threads. **`blockSize`** likely represents the number of threads per block along each dimension. So, if **`blockSize`** is 16, then **`threadsPerBlock`** will be a 2D block of 16x16 threads.
+    - **`dim3 numBlocks(gridSize, gridSize);`**: This line defines a 2D grid of blocks. **`gridSize`** likely represents the number of blocks along each dimension. So, if **`gridSize`** is, for example, 8, then **`numBlocks`** will be a 2D grid of 8x8 blocks.
+    - **`matrixMul<<<numBlocks, threadsPerBlock>>>(deviceA, deviceB, deviceC, N);`**: This line launches the CUDA kernel **`matrixMul`** with the specified grid and block dimensions. The kernel will execute with **`numBlocks`** blocks, each containing **`threadsPerBlock`** threads. The parameters **`deviceA`**, **`deviceB`**, and **`deviceC`** are device pointers to the input matrices A and B, and the output matrix C, respectively, residing in GPU memory. **`N`** likely represents the size of the matrices (assuming they are square matrices of size NxN).
+    
+    ```cpp
+        // Copy result back to host
+        cudaMemcpy(hostC.data(), deviceC, N * N * sizeof(int), cudaMemcpyDeviceToHost);
+    ```
+    
+    This line copies the data from the device (GPU) memory represented by the pointer `deviceC` to the host (CPU) memory represented by the vector `hostC` using `cudaMemcpy`. This is done to retrieve the result of the matrix multiplication.
+    
+    ```cpp
+        // Print result matrix
+        std::cout << "Matrix C (A + B):" << std::endl;
+        printMatrix(hostC, N);
+    ```
+    
+    This line prints the result matrix `C`, which is the product of matrices `A` and `B`, to the standard output using the `printMatrix` function.
+    
+    ```cpp
+        // Free device memory
+        cudaFree(deviceA);
+        cudaFree(deviceB);
+        cudaFree(deviceC);
+    ```
+    
+    These lines free the allocated device memory using `cudaFree`.
+    
+    ```cpp
+        return 0;
+    ```
+    
+    This line indicates the successful completion of the `main` function and, consequently, the entire program.

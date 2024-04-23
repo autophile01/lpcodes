@@ -1,0 +1,41 @@
+Sure, let's break down each of these topics in detail with respect to CUDA:
+
+1. **CUDA**: CUDA stands for Compute Unified Device Architecture. It's a parallel computing platform and programming model developed by NVIDIA for general computing on their GPUs (Graphics Processing Units). CUDA allows developers to use C, C++, or Fortran to program NVIDIA GPUs to perform general-purpose processing, which can greatly accelerate computational tasks.
+
+2. **Long form**: CUDA is often referred to as "Compute Unified Device Architecture," emphasizing its focus on providing a unified platform for harnessing the computational power of GPUs for general-purpose computing tasks beyond graphics rendering.
+
+3. **Architecture**: CUDA architecture refers to the structure and design principles underlying the CUDA platform. It encompasses the hardware architecture of NVIDIA GPUs, as well as the software architecture that enables developers to write parallel programs for execution on these GPUs.
+
+4. **Thread hierarchy**: In CUDA, threads are organized into a hierarchical structure comprising grids, blocks, and threads. This hierarchy enables efficient management and execution of parallel tasks on the GPU.
+
+5. **Grid**: A grid in CUDA is the highest level of the thread hierarchy. It consists of multiple blocks, and all threads within a grid execute the same kernel (a function that runs on the GPU) concurrently.
+
+6. **Block**: A block is a group of threads within a grid. Threads within the same block can cooperate and communicate through shared memory. Blocks are executed independently, and multiple blocks within a grid can execute concurrently on the GPU.
+
+7. **Thread**: A thread is the smallest unit of execution in CUDA. Threads execute in parallel on the GPU and perform the actual computation specified by the CUDA kernel.
+
+8. **Kernel**: In CUDA, a kernel is a function that runs on the GPU. It is executed by multiple threads in parallel and performs computations on data stored in GPU memory.
+
+9. **Device**: In CUDA terminology, the term "device" refers to the GPU itself. CUDA-enabled GPUs contain one or more streaming multiprocessors (SMs) that execute CUDA kernels and manage the execution of threads.
+
+10. **Host**: The host refers to the CPU and the system memory (RAM) of the computer running the CUDA program. Host code runs on the CPU and is responsible for initiating and managing CUDA operations.
+
+11. **Host code**: Host code refers to the part of a CUDA program that runs on the CPU. It typically includes tasks such as allocating memory, transferring data between the host and the device (GPU), and launching CUDA kernels.
+
+12. **Device code**: Device code refers to the CUDA kernels and other functions that run on the GPU. This code is written in CUDA C/C++ and is executed in parallel by multiple threads on the GPU.
+
+13. **Kernel launch**: Kernel launch refers to the process of initiating the execution of a CUDA kernel on the GPU. This involves specifying the grid and block dimensions, as well as any additional parameters required by the kernel.
+
+14. **Parameters at kernel launch**: When launching a CUDA kernel, developers can specify parameters such as the grid dimensions, block dimensions, and any additional arguments required by the kernel.
+
+15. **Warp**: A warp is a group of threads that execute in lockstep on the GPU. In NVIDIA GPUs, a warp typically consists of 32 threads, and all threads in a warp execute the same instruction simultaneously.
+
+16. **Grid dimension**: The grid dimension refers to the number of blocks in each dimension of the grid. It determines the overall size and shape of the grid of threads that execute the CUDA kernel.
+
+17. **Block dimension**: The block dimension refers to the number of threads in each dimension of a block. It determines the size and shape of individual blocks within the grid.
+
+18. **Number of threads supported by GPU**: The number of threads supported by a GPU depends on its architecture and specifications. Modern NVIDIA GPUs can support thousands of threads executing in parallel.
+
+19. **Flow of program execution**: The flow of program execution in a CUDA program typically involves allocating memory on the GPU, transferring data from the host to the device, launching CUDA kernels to perform computations, transferring results back to the host, and freeing allocated memory.
+
+20. **Threadidx**: **`threadIdx`** is a built-in variable in CUDA that provides the thread index within a block. It is used by CUDA kernels to determine the unique identifier of each thread, which can be used to access data or perform specific computations

@@ -1,0 +1,32 @@
+- **DNN & LR Theory**
+    
+    Linear Regression : Linear regression is a basic and commonly used type of predictive analysis. The overall idea of regression is to examine two things: (1) does a set of predictor variables do a good job in predicting an outcome (dependent) variable? (2) Which variables in particular are significant predictors of the outcome variable, and in what way do they–indicated by the magnitude and sign of the beta estimates–impact the outcome variable? These regression
+    estimates are used to explain the relationship between one dependent variable and one or more independent variables.
+    The simplest form of the regression equation with one dependent and one independent variable is defined by the formula y = c + b*x, where y = estimated dependent variable score, c = constant, b = regression coefficient, and x = score on the independent variable.
+    
+    **What is a Neural Network?**
+    The basic unit of the brain is known as a neuron; there are approximately 86 billion neurons in our nervous system which are connected to 10^14-10^15 synapses. Each neuron receives a signal from the synapses and gives output after processing the signal. This idea is drawn from the brain to build a neural network. Each neuron performs a dot product between the inputs and weights, adds biases, applies an activation function, and
+    gives out the outputs. When a large number of neurons are present together to give out a large number of outputs, it forms a neural layer. Finally, multiple layers combine to form a neural network.
+    
+    **Neural Network Architecture :**
+    Neural networks are formed when multiple neural layers combine with each other to give out a network, or we can say that there are some layers whose outputs are inputs for other layers. The most common type of layer to construct a basic neural network is the fully connected layer, in which the adjacent layers are fully connected pairwise and neurons in a single layer are not connected to each other.
+    
+    Naming conventions. When the N-layer neural network, we do not count the input layer. Therefore, a single-layer neural network describes a network with no hidden layers (input directly mapped to output). In the case of our code, we’re going to use a single-layer neural network, i.e. We do not have a hidden layer.
+    
+    Output layer. Unlike all layers in a Neural Network, the output layer neurons most commonly do not have an activation function (or you can think of them as having a linear identity activation function). This is because the last output layer is usually taken to represent the class scores (e.g. in classification), which are arbitrary real-valued numbers, or some kind of real-valued target (e.g. In regression). Since we’re performing regression using a single layer, we do not have any activation function.
+    
+    Sizing neural networks. The two metrics that people commonly use to measure the size of neural networks are the number of neurons, or more commonly the number of parameters.
+    The Boston Housing Dataset is a popular dataset in machine learning and contains information about various attributes of houses in Boston. The goal of using deep neural networks on this dataset is to predict the median value of owner occupied homes.
+    
+    The Boston Housing Dataset contains 13 input variables or features, such as crime rate, average number of rooms per dwelling, and distance to employment centers. The target variable is the median value of owner-occupied homes. The dataset has 506 rows, which is not very large, but still sufficient to train a deep neural network.
+    
+    To implement a deep neural network on the Boston Housing Dataset, we can follow these steps:
+    **Load the dataset:** We can load the dataset using libraries like pandas or numpy.
+    **Preprocess the data:** We need to preprocess the data by scaling the input features so that they have zero mean and unit variance. This step is important because it helps the neural network to converge faster.
+    **Split the dataset:** We split the dataset into training and testing sets. We can use a 70/30 or 80/20 split for training andtesting, respectively.
+    **Define the model architecture:** We need to define the architecture of our deep neural network. We can use libraries like Keras or PyTorch to define our model. The architecture can include multiple hidden layers with various activation functions and regularization techniques like dropout.
+    **Compile the model:** We need to compile the model by specifying the loss function, optimizer, and evaluation metrics. For regression problems like this, we can use mean squared error as the loss function and adam optimizer.
+    **Train the model:** We can train the model using the training data. We can use techniques like early stopping to prevent overfitting.
+    **Evaluate the model:** We can evaluate the model using the testing data. We can calculate the mean squared error or the mean absolute error to evaluate the performance of the model.
+    
+    Overall, using a deep neural network on the Boston Housing Dataset can result in accurate predictions of the median value of owner-occupied homes. By following the above steps, we can implement a deep neural network and fine-tune its hyperparameters to achieve better performance.

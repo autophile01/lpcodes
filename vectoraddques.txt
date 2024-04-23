@@ -1,0 +1,170 @@
+- **Vector Addition Code Explanation**
+    
+    Certainly! Let's break down the code line by line:
+    
+    ```cpp
+    #include <iostream>
+    #include <vector>
+    #include <cstdlib>
+    #include <ctime>
+    
+    ```
+    
+    - These lines include necessary header files for input/output, dynamic arrays (vectors), and random number generation.
+    
+    ```cpp
+    // CUDA kernel to add two vectors element-wise
+    __global__ void vectorAdd(const int *a, const int *b, int *c, int size) {
+    
+    ```
+    
+    - This declares a CUDA kernel function named `vectorAdd`. CUDA kernels are functions executed on the GPU. This kernel takes three input arrays (`a`, `b`, `c`) and the size of the arrays (`size`). It adds corresponding elements of arrays `a` and `b` and stores the result in array `c`.
+    
+    ```cpp
+        int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    ```
+    
+    - `tid` (thread ID) is calculated based on the current block index (`blockIdx.x`) and the thread index within the block (`threadIdx.x`). This formula computes a unique ID for each thread in the grid.
+    
+    ```cpp
+        if (tid < size) {
+    
+    ```
+    
+    - Checks if the thread ID is within the valid range of array indices (`size`). This is necessary because the number of threads launched might exceed the size of the arrays, and we only want threads to process valid array elements.
+    
+    ```cpp
+            c[tid] = a[tid] + b[tid];
+    
+    ```
+    
+    - Adds corresponding elements of arrays `a` and `b` and stores the result in array `c`. Each thread performs this operation for a single element based on its thread ID (`tid`).
+    
+    ```cpp
+    }
+    
+    ```
+    
+    - End of the conditional block.
+    
+    ```cpp
+    }
+    
+    int main() {
+    
+    ```
+    
+    - Start of the `main` function, the entry point of the program.
+    
+    ```cpp
+        const int N = 1000; // Size of the vectors
+        const int blockSize = 256; // Threads per block
+    
+    ```
+    
+    - Defines constants `N` (size of the vectors) and `blockSize` (number of threads per block).
+    
+    ```cpp
+        // Generate random vectors
+        std::vector<int> hostA(N);
+        std::vector<int> hostB(N);
+        std::vector<int> hostC(N);
+    
+        srand(time(NULL));
+        for (int i = 0; i < N; ++i) {
+            hostA[i] = rand() % 1000; // Random numbers between 0 and 999
+            hostB[i] = rand() % 1000;
+        }
+    
+    ```
+    
+    - Initializes three host (CPU) arrays `hostA`, `hostB`, and `hostC` with size `N`. Random integers between 0 and 999 are generated and stored in arrays `hostA` and `hostB`.
+    
+    ```cpp
+        // Allocate device memory
+        int *deviceA, *deviceB, *deviceC;
+        cudaMalloc((void**)&deviceA, N * sizeof(int));
+        cudaMalloc((void**)&deviceB, N * sizeof(int));
+        cudaMalloc((void**)&deviceC, N * sizeof(int));
+    
+    ```
+    
+    - Allocates memory on the GPU (device) for arrays `deviceA`, `deviceB`, and `deviceC` using `cudaMalloc`.
+    
+    ```cpp
+        // Copy input vectors from host to device memory
+        cudaMemcpy(deviceA, hostA.data(), N * sizeof(int), cudaMemcpyHostToDevice);
+        cudaMemcpy(deviceB, hostB.data(), N * sizeof(int), cudaMemcpyHostToDevice);
+    
+    ```
+    
+    - Copies data from the host arrays `hostA` and `hostB` to the corresponding device arrays `deviceA` and `deviceB` using `cudaMemcpy`.
+    
+    ```cpp
+        // Compute grid size
+        int gridSize = (N + blockSize - 1) / blockSize;
+    
+    ```
+    
+    - Calculates the grid size required to launch the kernel based on the number of elements (`N`) and the block size (`blockSize`).
+    
+    ```cpp
+        // Launch the kernel
+        vectorAdd<<<gridSize, blockSize>>>(deviceA, deviceB, deviceC, N);
+    
+    ```
+    
+    - Launches the CUDA kernel `vectorAdd` with the specified grid size and block size, and passes device arrays `deviceA`, `deviceB`, `deviceC`, and the size `N` as arguments.
+    
+    ```cpp
+        // Copy result from device to host memory
+        cudaMemcpy(hostC.data(), deviceC, N * sizeof(int), cudaMemcpyDeviceToHost);
+    
+    ```
+    
+    - Copies the result array `deviceC` from the device to the host array `hostC` using `cudaMemcpy`.
+    
+    ```cpp
+        // Print original vectors and their sum vector
+        std::cout << "Vector A: ";
+        for (int i = 0; i < N; ++i) {
+            std::cout << hostA[i] << " ";
+        }
+        std::cout << std::endl;
+    
+        std::cout << "Vector B: ";
+        for (int i = 0; i < N; ++i) {
+            std::cout << hostB[i] << " ";
+        }
+        std::cout << std::endl;
+    
+        std::cout << "Sum Vector: ";
+        for (int i = 0; i < N; ++i) {
+            std::cout << hostC[i] << " ";
+        }
+        std::cout << std::endl;
+    
+    ```
+    
+    - Prints the original vectors `hostA` and `hostB`, and their sum `hostC`.
+    
+    ```cpp
+        // Free device memory
+        cudaFree(deviceA);
+        cudaFree(deviceB);
+        cudaFree(deviceC);
+    
+    ```
+    
+    - Frees the allocated device memory using `cudaFree`.
+    
+    ```cpp
+        return 0;
+    }
+    
+    ```
+    
+    - End of the `main` function and the program.
+    
+    This code demonstrates a simple CUDA program for adding two vectors element-wise using GPU parallelism.
